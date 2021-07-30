@@ -12,9 +12,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install Dependencies
-        run: |
-        pip install poetry
-        poetry install --extras docs --extras tests
+        run: pip install .[docs,tests]
 
       - name: Build docs
         run: cd docs; make html
