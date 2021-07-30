@@ -14,7 +14,7 @@ jobs:
       - name: Install Dependencies
         run: |
         pip install poetry
-        poetry install --extras "docs tests"
+        poetry install --extras docs --extras tests
 
       - name: Build docs
         run: cd docs; make html
