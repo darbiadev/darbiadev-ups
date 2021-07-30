@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "darbiadev-ups"
+version = "0.1.0"
+description = "darbiadev-ups"
+authors = ["Bradley Reynolds <bradley.reynolds@darbia.dev>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://gitlab.com/darbia/darbiadev-ups"
+documentation = "https://darbia.gitlab.io/darbiadev-ups"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.26.0"
+
+sphinx = { version = "^4.1.1", optional = true }
+sphinx-autodoc-annotation = { version =  "^1.0-1", optional = true }
+sphinxcontrib-packages = { version = "^1.0.1", optional = true }
+sphinxcontrib-napoleon = { version =  "^0.7", optional = true }
+sphinxcontrib-apidoc = { version = "^0.3.0", optional = true }
+sphinx-rtd-theme = { version = "^0.5.2", optional = true }
+pytest = { version = "^6.2.4", optional = true }
+tox = { version = "^3.24.0", optional = true }
+toml = { version = "^0.10.2", optional = true }
+
+[tool.poetry.extras]
+docs = ['sphinx', 'sphinx-autodoc-annotation', 'sphinxcontrib-packages', 'sphinxcontrib-napoleon', 'sphinxcontrib-apidoc','sphinx_rtd_theme', 'toml']
+tests = ['pytest', 'tox']
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+"""
