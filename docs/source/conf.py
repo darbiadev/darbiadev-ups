@@ -33,7 +33,6 @@ release = toml.load('../../pyproject.toml')['tool']['poetry']['version']
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'recommonmark',
     'autoapi.extension',
     'sphinx.ext.coverage',
     'sphinx.ext.napoleon',
