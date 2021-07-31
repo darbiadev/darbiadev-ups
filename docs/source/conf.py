@@ -1,14 +1,9 @@
+#!/usr/bin/env python
+
 # Configuration file for the Sphinx documentation builder.
-#
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
-
-# -- Path setup --------------------------------------------------------------
-
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
 
 
 import os
@@ -18,18 +13,13 @@ import toml
 
 sys.path.insert(0, os.path.abspath('../..'))
 
-# -- Project information -----------------------------------------------------
+project_config = toml.load('../../pyproject.toml')
+project = project_config['tool']['poetry']['name']
+release = project_config['tool']['poetry']['version']
+git_url = project_config['tool']['poetry']['repository']
 
-project = 'darbiadev-ups'
-copyright = '2021, Bradley Reynolds'
-author = 'Bradley Reynolds'
-
-# The full version, including alpha/beta/rc tags
-release = toml.load('../../pyproject.toml')['tool']['poetry']['version']
-
-# -- General configuration ---------------------------------------------------
-
-git_url = toml.load('../../pyproject.toml')['tool']['poetry']['repository']
+copyright = '2021, Darbia'
+author = 'Darbia'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -89,8 +79,10 @@ def linkcode_resolve(domain, info):
 
     filename = info['module'].replace('.', '/') + '.py'
 
-    if isinstance(val, (types.ModuleType, types.MethodType, types.FunctionType, types.TracebackType, types.FrameType,
-                        types.CodeType)):
+    if isinstance(
+            val,
+            (types.ModuleType, types.MethodType, types.FunctionType, types.TracebackType, types.FrameType, types.CodeType)
+    ):
         try:
             lines, first = inspect.getsourcelines(val)
             filename += '#L%d-L%d' % (first, first + len(lines) - 1)

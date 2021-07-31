@@ -6,7 +6,7 @@ from enum import Enum, auto
 import requests
 
 
-class AuthType(Enum):
+class _AuthType(Enum):
     HEADERS = auto()
     JSON = auto()
 
@@ -52,7 +52,7 @@ class UPSServices:
     def _make_request(
             self,
             method: str,
-            auth_type: AuthType,
+            auth_type: _AuthType,
             service: str,
             data: dict[str, ...]
     ) -> dict:
@@ -62,9 +62,9 @@ class UPSServices:
             'json': data
         }
 
-        if auth_type == AuthType.HEADERS:
+        if auth_type == _AuthType.HEADERS:
             args['headers'] = self.__auth_headers()
-        elif auth_type == AuthType.JSON:
+        elif auth_type == _AuthType.JSON:
             args['json'] = args['json'] | self.__auth_dict()
         else:
             raise ValueError(f'Invalid auth_type {auth_type}')
@@ -91,7 +91,7 @@ class UPSServices:
             }
         }
 
-        return self._make_request(method='post', auth_type=AuthType.JSON, service=service, data=data)
+        return self._make_request(method='post', auth_type=_AuthType.JSON, service=service, data=data)
 
     def check_address(
             self,
@@ -115,7 +115,7 @@ class UPSServices:
             }
         }
 
-        return self._make_request(method='post', auth_type=AuthType.HEADERS, service=service, data=data)
+        return self._make_request(method='post', auth_type=_AuthType.HEADERS, service=service, data=data)
 
     def time_in_transit(
             self,
