@@ -5,22 +5,29 @@ description = "darbiadev-ups"
 authors = ["Bradley Reynolds <bradley.reynolds@darbia.dev>"]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/DarbiaDev/darbiadev-ups"
+repository = "https://github.com/darbiadev/darbiadev-ups/"
 documentation = "https://darbiadev.github.io/darbiadev-ups/"
 
 [tool.poetry.dependencies]
+# Python
 python = "^3.9"
+
 requests = "^2.26.0"
 
+# Docs
 sphinx = { version = "^4.1.1", optional = true }
 sphinx-autodoc-annotation = { version =  "^1.0-1", optional = true }
 sphinxcontrib-packages = { version = "^1.0.1", optional = true }
 sphinxcontrib-napoleon = { version =  "^0.7", optional = true }
 sphinxcontrib-apidoc = { version = "^0.3.0", optional = true }
 sphinx-rtd-theme = { version = "^0.5.2", optional = true }
+toml = { version = "^0.10.2", optional = true }
+sphinxcontrib-autoprogram = "^0.1.7"
+
+# Tests
 pytest = { version = "^6.2.4", optional = true }
 tox = { version = "^3.24.0", optional = true }
-toml = { version = "^0.10.2", optional = true }
+
 
 [tool.poetry.extras]
 docs = ['sphinx', 'sphinx-autodoc-annotation', 'sphinxcontrib-packages', 'sphinxcontrib-napoleon', 'sphinxcontrib-apidoc','sphinx_rtd_theme', 'toml']

@@ -13,6 +13,7 @@
 
 import os
 import sys
+
 import toml
 
 sys.path.insert(0, os.path.abspath('../..'))
@@ -26,26 +27,29 @@ author = 'Bradley Reynolds'
 # The full version, including alpha/beta/rc tags
 release = toml.load('../../pyproject.toml')['tool']['poetry']['version']
 
-
 # -- General configuration ---------------------------------------------------
+
+git_url = toml.load('../../pyproject.toml')['tool']['poetry']['repository']
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
+    'sphinx.ext.linkcode',
+    'sphinx.ext.autosummary',
     'sphinx.ext.coverage',
-    'sphinx.ext.napoleon',
-    'sphinxcontrib.apidoc',
-    'sphinx.ext.viewcode',
-    'sphinx_rtd_theme'
+    'sphinx.ext.todo',
+    'sphinx.ext.intersphinx',
+    'sphinxcontrib.autoprogram',
+    'sphinxcontrib.napoleon'
 ]
 
 apidoc_module_dir = '../../darbiadev_ups'
 
 autoapi_type = 'python'
 autoapi_dirs = [apidoc_module_dir]
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -54,7 +58,6 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -67,3 +70,31 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
+def linkcode_resolve(domain, info):
+    if domain != 'py':
+        return None
+    if not info['module']:
+        return None
+
+    import importlib, inspect, types
+    mod = importlib.import_module(info['module'])
+
+    val = mod
+    for k in info['fullname'].split('.'):
+        val = getattr(val, k, None)
+        if val is None:
+            break
+
+    filename = info['module'].replace('.', '/') + '.py'
+
+    if isinstance(val, (types.ModuleType, types.MethodType, types.FunctionType, types.TracebackType, types.FrameType,
+                        types.CodeType)):
+        try:
+            lines, first = inspect.getsourcelines(val)
+            filename += '#L%d-L%d' % (first, first + len(lines) - 1)
+        except (IOError, TypeError):
+            pass
+
+    return f'{git_url}blob/main/{filename}'

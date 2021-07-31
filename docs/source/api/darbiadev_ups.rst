@@ -1,13 +1,16 @@
 darbiadev\_ups package
 ======================
 
-Subpackages
------------
+Submodules
+----------
 
-.. toctree::
-   :maxdepth: 4
+darbiadev\_ups.ups\_services module
+-----------------------------------
 
-   darbiadev_ups.lib
+.. automodule:: darbiadev_ups.ups_services
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------
