@@ -7,14 +7,14 @@ import requests
 
 
 class _AuthType(Enum):
+    """An enum for the authentication types"""
     HEADERS = auto()
     JSON = auto()
 
 
 class UPSServices:
-    """A class wrapping UPS' API.
-
-    This class wraps UPS' API.
+    """
+    A class wrapping UPS' API.
     """
 
     def __init__(
@@ -30,6 +30,7 @@ class UPSServices:
         self.__access_license_number: str = access_license_number
 
     def __auth_headers(self) -> dict[str, ...]:
+        """Return authentication headers as dictionary"""
         return {
             'Username': self.__username,
             'Password': self.__password,
@@ -37,6 +38,7 @@ class UPSServices:
         }
 
     def __auth_dict(self) -> dict[str, ...]:
+        """Return authentication JSON as dictionary"""
         return {
             'UPSSecurity': {
                 'UsernameToken': {
@@ -77,6 +79,7 @@ class UPSServices:
             self,
             tracking_number: str
     ) -> dict:
+        """Get tracking details for a tracking number"""
         service: str = 'rest/Track'
 
         data = {
@@ -101,6 +104,7 @@ class UPSServices:
             postal_code: str,
             country: str
     ):
+        """Validate an address"""
         service: str = 'addressvalidation/v1/3'
 
         data = {
@@ -128,7 +132,7 @@ class UPSServices:
             weight: str,
             pickup_date: str = None
     ) -> dict:
-
+        """Estimate transit time"""
         service: str = 'rest/TimeInTransit'
 
         if pickup_date is None:
@@ -170,4 +174,4 @@ class UPSServices:
             }
         }
 
-        return self._make_request(method='post', auth_type=AuthType.JSON, service=service, data=data)
+        return self._make_request(method='post', auth_type=_AuthType.JSON, service=service, data=data)
