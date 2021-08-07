@@ -15,6 +15,7 @@ Each of the ``darbiadev_ups`` modules is documented here.
    :glob:
 
    ups_services
+   helpers
 
 Indices and tables
 ------------------

@@ -2,8 +2,11 @@
 
 from datetime import datetime
 from enum import Enum, auto
+from typing import Union
 
 import requests
+
+from darbiadev_ups.helpers import parse_address_validation_response, parse_time_in_transit_response, parse_tracking_response
 
 
 class _AuthType(Enum):
@@ -29,16 +32,16 @@ class UPSServices:
         self.__password: str = password
         self.__access_license_number: str = access_license_number
 
-    def __auth_headers(self) -> dict[str, ...]:
-        """Return authentication headers as dictionary"""
+    def __auth_headers(self) -> dict[str, str]:
+        """Return authentication headers as a dictionary"""
         return {
             'Username': self.__username,
             'Password': self.__password,
             'AccessLicenseNumber': self.__access_license_number,
         }
 
-    def __auth_dict(self) -> dict[str, ...]:
-        """Return authentication JSON as dictionary"""
+    def __auth_dict(self) -> dict[str, dict[str, dict[str, str]]]:
+        """Return authentication JSON as a dictionary"""
         return {
             'UPSSecurity': {
                 'UsernameToken': {
@@ -94,9 +97,10 @@ class UPSServices:
             }
         }
 
-        return self._make_request(method='post', auth_type=_AuthType.JSON, service=service, data=data)
+        response = self._make_request(method='POST', auth_type=_AuthType.JSON, service=service, data=data)
+        return parse_tracking_response(response)
 
-    def check_address(
+    def validate_address(
             self,
             street_lines: list[str],
             city: str,
@@ -119,7 +123,8 @@ class UPSServices:
             }
         }
 
-        return self._make_request(method='post', auth_type=_AuthType.HEADERS, service=service, data=data)
+        response = self._make_request(method='POST', auth_type=_AuthType.HEADERS, service=service, data=data)
+        return parse_address_validation_response(response)
 
     def time_in_transit(
             self,
@@ -131,7 +136,7 @@ class UPSServices:
             to_country: str,
             weight: str,
             pickup_date: str = None
-    ) -> dict:
+    ) -> dict[str, Union[str, list[dict[str, str]]]]:
         """Estimate transit time"""
         service: str = 'rest/TimeInTransit'
 
@@ -144,7 +149,6 @@ class UPSServices:
                     "RequestOption": "TNT",
                     "TransactionReference": {
                         "CustomerContext": to_postal_code + ' ' + str(datetime.now().isoformat()),
-                        "TransactionIdentifier": ""
                     }
                 },
                 "ShipFrom": {
@@ -174,4 +178,5 @@ class UPSServices:
             }
         }
 
-        return self._make_request(method='post', auth_type=_AuthType.JSON, service=service, data=data)
+        response = self._make_request(method='POST', auth_type=_AuthType.JSON, service=service, data=data)
+        return parse_time_in_transit_response(response)
