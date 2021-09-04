@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from enum import Enum, auto
-from typing import Union
+from typing import Final, Union
 
 import requests
 
@@ -19,6 +19,9 @@ class UPSServices:
     """
     A class wrapping UPS' API.
     """
+
+    TRACKING_REGEX: Final[str] = r'1Z[A-Z0-9]{6}[0-9]{10}'
+    TRACKING_URL: Final[str] = 'https://wwwapps.ups.com/WebTracking/processInputRequest?TypeOfInquiryNumber=T&InquiryNumber1={tracking_number}'
 
     def __init__(
             self,

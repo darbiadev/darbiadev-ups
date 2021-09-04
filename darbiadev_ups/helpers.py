@@ -5,8 +5,6 @@ from typing import Any, Union
 
 from benedict import benedict
 
-tracking_url = 'https://wwwapps.ups.com/WebTracking/processInputRequest?TypeOfInquiryNumber=T&InquiryNumber1={tracking_number}'
-
 
 def parse_tracking_response(response: dict) -> dict:
     """Parse tracking data"""
