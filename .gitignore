@@ -1,23 +1,18 @@
 # IDE
 .idea
 
-# Packing
-darbiadev_ups.egg-info
-docs/build
-dist
-poetry.lock
+# PDM
+__pypackages__
 
-# Virtual environment
-venv
+# Packaging
+darbiadev_ups.egg-info
+dist
 
 # Cache
 __pycache__
 
 # Docs
-docs/_build
-
-# Testing
-.tox
+docs/build
 
 # Type checking
 .mypy_cache

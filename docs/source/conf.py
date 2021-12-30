@@ -14,9 +14,9 @@ import toml
 sys.path.insert(0, os.path.abspath('../..'))
 
 project_config = toml.load('../../pyproject.toml')
-project = project_config['tool']['poetry']['name']
-release = project_config['tool']['poetry']['version']
-git_url = project_config['tool']['poetry']['repository']
+project = project_config["project"]['name']
+release = project_config["project"]['version']
+git_url = project_config["project"]["urls"]['repository']
 copyright = project_config['tool']['sphinx']['copyright']
 author = project_config['tool']['sphinx']['author']
 api_dir = project_config['tool']['sphinx']['api_dir']
@@ -25,15 +25,15 @@ api_dir = project_config['tool']['sphinx']['api_dir']
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.linkcode',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.coverage',
-    'sphinx.ext.todo',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
+    "sphinx.ext.linkcode",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.coverage",
+    "sphinx.ext.todo",
     'sphinx.ext.intersphinx',
-    'sphinxcontrib.autoprogram',
-    'sphinxcontrib.napoleon'
+    "sphinx.ext.napoleon",
+    "sphinxcontrib.autoprogram",
 ]
 
 apidoc_module_dir = f'../../{api_dir}'
@@ -80,7 +80,8 @@ def linkcode_resolve(domain, info):
 
     if isinstance(
             val,
-            (types.ModuleType, types.MethodType, types.FunctionType, types.TracebackType, types.FrameType, types.CodeType)
+            (types.ModuleType, types.MethodType, types.FunctionType, types.TracebackType, types.FrameType,
+             types.CodeType)
     ):
         try:
             lines, first = inspect.getsourcelines(val)
