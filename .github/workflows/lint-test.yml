@@ -100,4 +100,4 @@ jobs:
         --msg-template='::error file={path},line={line},col={column}::[pylint] {category} {msg_id}: {msg}'"
 
       - name: Run tests and generate coverage report
-        run: pdm run pytest -n auto --cov --disable-warnings -q
+        run: pdm run pytest --cov --disable-warnings -q
