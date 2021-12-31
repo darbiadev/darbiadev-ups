@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""helpers"""
 
 import datetime
 from typing import Any, Union
@@ -14,10 +15,9 @@ def parse_tracking_response(response: dict) -> dict:
         return_value = {
             "_original": response,
             "shipment_references": set(
-                dct["Value"]
-                for dct in (data.get("TrackResponse.Shipment.ReferenceNumber") or [])
+                dct["Value"] for dct in (data.get("TrackResponse.Shipment.ReferenceNumber") or [])
             ),
-            "packages": dict(),
+            "packages": {},
         }
 
         if not isinstance(result, list):
@@ -27,17 +27,14 @@ def parse_tracking_response(response: dict) -> dict:
         for package in packages:
             return_value["packages"][package.get("TrackingNumber")] = {
                 "status": package.get("Activity[0].Status.Description"),
-                "references": [
-                    dct["Value"] for dct in (package.get("ReferenceNumber") or [])
-                ],
+                "references": [dct["Value"] for dct in (package.get("ReferenceNumber") or [])],
             }
 
         return_value["shipment_references"] = list(return_value["shipment_references"])
         return return_value
     elif error := data.get("Fault.detail.Errors.ErrorDetail.PrimaryErrorCode"):
         return {"external_error": error}
-    else:
-        return {"error": "unknown response", "full_response": data}
+    return {"error": "unknown response", "full_response": data}
 
 
 # TODO: Support multiple candidates
@@ -58,9 +55,7 @@ def parse_address_validation_response(
     try:
         if "response.errors" in data:
             result["street_address"] = "ERROR(S) VALIDATING ADDRESS"
-            result["region"] = [
-                error.get("message") for error in data["response.errors"]
-            ]
+            result["region"] = [error.get("message") for error in data["response.errors"]]
             return result
 
         if "XAVResponse.NoCandidatesIndicator" in data:
@@ -73,18 +68,14 @@ def parse_address_validation_response(
             result["region"] = "No candidates"
             return result
 
-        result["classification"] = data.get(
-            "XAVResponse.Candidate.AddressClassification.Description", "Unknown"
-        )
+        result["classification"] = data.get("XAVResponse.Candidate.AddressClassification.Description", "Unknown")
 
         candidates = data["XAVResponse.Candidate"]
         if not isinstance(candidates, list):
             candidates = [candidates]
         first_candidate = benedict(candidates[0])
 
-        result["classification"] = first_candidate.get(
-            "AddressClassification.Description", "Unknown"
-        )
+        result["classification"] = first_candidate.get("AddressClassification.Description", "Unknown")
 
         street_address = first_candidate["AddressKeyFormat.AddressLine"]
         if isinstance(street_address, list):
@@ -123,15 +114,11 @@ def parse_time_in_transit_response(
 
         pickup_date = service.get("EstimatedArrival.Pickup.Date")
         pickup_time = service.get("EstimatedArrival.Pickup.Time")
-        pickup_datetime = datetime.datetime.strptime(
-            pickup_date + pickup_time, "%Y%m%d%H%M%S"
-        )
+        pickup_datetime = datetime.datetime.strptime(pickup_date + pickup_time, "%Y%m%d%H%M%S")
 
         arrival_date = service.get("EstimatedArrival.Arrival.Date")
         arrival_time = service.get("EstimatedArrival.Arrival.Time")
-        arrival_datetime = datetime.datetime.strptime(
-            arrival_date + arrival_time, "%Y%m%d%H%M%S"
-        )
+        arrival_datetime = datetime.datetime.strptime(arrival_date + arrival_time, "%Y%m%d%H%M%S")
 
         business_days_in_transit = service.get("EstimatedArrival.BusinessDaysInTransit")
         day_of_week = service.get("EstimatedArrival.DayOfWeek")

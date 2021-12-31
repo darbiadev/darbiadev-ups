@@ -28,8 +28,7 @@ jobs:
           key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-pdm-${{ hashFiles('**/pyproject.toml') }}
 
       - name: Install dependencies
-        run: |
-          pdm sync -d -G docs      
+        run: pdm sync
 
       - name: Build docs
         run: cd docs; make html

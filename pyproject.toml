@@ -1,35 +1,45 @@
 [project]
 name = "darbiadev-ups"
-version = "0.5.0"
+version = "0.6.0"
 description = "darbiadev-ups"
+readme="README.md"
 authors = [
-    {name = "Bradley Reynolds", email = "bradley.reynolds@darbia.dev"},
+    { name = "Bradley Reynolds", email = "bradley.reynolds@darbia.dev" },
 ]
 dependencies = [
     "requests>=2.26.0",
     "python-benedict>=0.24.3",
 ]
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = { text = "MIT" }
 
 [project.urls]
-homepage = ""
 repository = "https://github.com/darbiadev/darbiadev-ups/"
-documentation = "https://darbiadev.github.io/darbiadev-ups/"
+documentation = "https://darbia.dev/darbiadev-ups/"
 
 [project.optional-dependencies]
 
 [tool]
 [tool.pdm]
 [tool.pdm.dev-dependencies]
+dev = [
+    "pip-licenses>=3.5.3",
+    "taskipy>=1.9.0",
+    "pre-commit>=2.16.0",
+    "pylint>=2.12.2",
+    "pytest>=6.2.5",
+    "pytest-cov>=3.0.0",
+    "pytest-xdist>=2.5.0",
+    "black>=21.12b0",
+]
+tests = [
+    "pytest>=6.2.5",
+]
 docs = [
     "sphinx>=4.3.2",
     "sphinxcontrib-autoprogram>=0.1.7",
     "sphinx-rtd-theme>=1.0.0",
     "toml>=0.10.2",
-]
-test = [
-    "pytest>=6.2.5",
 ]
 
 [build-system]
@@ -41,14 +51,12 @@ copyright = "Darbia"
 author = "Bradley Reynolds"
 api_dir = "darbiadev_ups"
 
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-envlist = py39
-isolated_build = True
-[testenv]
-deps =
-    pytest
-commands =
-    pytest
-"""
+[tool.black]
+target-version = ["py310"]
+line-length = 120
+
+[tool.pytest.ini_options]
+addopts = "tests -r a -v --doctest-modules darbiadev_ups"
+
+[tool.pylint.format]
+max-line-length = 120
