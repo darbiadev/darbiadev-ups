@@ -64,7 +64,7 @@ jobs:
       # and add it to the ALLOWED_LICENSE variable
       - name: Check Dependencies License
         run: |
-          python -m ensurepip
+          pdm run python -m ensurepip
           pdm run pip-licenses --allow-only="$ALLOWED_LICENSE" \
             --package $(pdm export --format=requirements --without-hashes --production 2>/dev/null | sed "s/==.*//g" | tr "\n" " ")
 
