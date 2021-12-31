@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+  - repo: local
+    hooks:
+      - id: pylint
+        name: Pylint
+        description: This hook runs pylint within the project's environment.
+        entry: pdm run pylint bradworks/
+        language: system
+        types: [python]
+        require_serial: true
