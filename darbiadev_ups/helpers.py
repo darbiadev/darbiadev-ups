@@ -37,7 +37,6 @@ def parse_tracking_response(response: dict) -> dict:
     return {"error": "unknown response", "full_response": data}
 
 
-# TODO: Support multiple candidates
 def parse_address_validation_response(
     response: dict,
 ) -> dict[str, Union[Union[None, str, list], Any]]:

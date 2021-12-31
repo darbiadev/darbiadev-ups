@@ -60,3 +60,5 @@ addopts = "tests -r a -v --doctest-modules darbiadev_ups"
 
 [tool.pylint.format]
 max-line-length = 120
+[tool.pylint.messages_control]
+disable = "R1705, R0914, R0914"
