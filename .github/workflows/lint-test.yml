@@ -64,7 +64,7 @@ jobs:
       # and add it to the ALLOWED_LICENSE variable
       - name: Check Dependencies License
         run: |
-          pip-licenses --allow-only="$ALLOWED_LICENSE" \
+          pdm run pip-licenses --allow-only="$ALLOWED_LICENSE" \
             --package $(pdm export --format=requirements --without-hashes --production | sed "s/==.*//g" | tr "\n" " ")
 
       # This step caches our pre-commit environment. To make sure we
@@ -82,7 +82,7 @@ jobs:
       # action. As pre-commit does not support user installs, we set
       # PIP_USER=0 to not do a user install.
       - name: Run pre-commit hooks
-        run: export PIP_USER=0; SKIP=pylint pre-commit run --all-files
+        run: export PIP_USER=0; SKIP=pylint pdm run pre-commit run --all-files
 
       # Run pylint and have it format the linting errors in the format of
       # the GitHub Workflow command to register error annotations. This
@@ -97,4 +97,4 @@ jobs:
         --msg-template='::error file={path},line={line},col={column}::[pylint] {category} {msg_id}: {msg}'"
 
       - name: Run tests and generate coverage report
-        run: pytest -n auto --cov --disable-warnings -q
+        run: pdm run pytest -n auto --cov --disable-warnings -q
