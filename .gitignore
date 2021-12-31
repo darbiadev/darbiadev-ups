@@ -16,3 +16,6 @@ docs/build
 
 # Type checking
 .mypy_cache
+
+# Testing
+.coverage
