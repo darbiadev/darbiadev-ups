@@ -2,11 +2,13 @@
 """client tests"""
 
 import pytest
+
 from darbiadev_ups import UPSServices
 
 
 def test_invalid_auth_type_error():
-    with pytest.raises(ValueError) as exception:
+    """Error on invalid auth types"""
+    with pytest.raises(ValueError):
         client = UPSServices(
             base_url="test",
             username="test",
