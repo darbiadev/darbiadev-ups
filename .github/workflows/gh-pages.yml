@@ -10,7 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10']
+        python-version: [ '3.10' ]
+
+    env:
+      CACHE_VERSION: v1
 
     steps:
       - uses: actions/checkout@v2

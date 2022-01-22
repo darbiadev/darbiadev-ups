@@ -3,6 +3,7 @@
 
 # PDM
 __pypackages__
+.pdm.toml
 
 # Packaging
 darbiadev_ups.egg-info
