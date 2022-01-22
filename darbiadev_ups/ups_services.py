@@ -3,7 +3,7 @@
 
 from datetime import datetime
 from enum import Enum, auto
-from typing import Final, Union, Any
+from typing import Any, Final
 
 import requests
 
@@ -127,7 +127,7 @@ class UPSServices:
         to_country: str,
         weight: str,
         pickup_date: str = None,
-    ) -> dict[str, Union[str, list[dict[str, str]]]]:
+    ) -> dict[str, str | list[dict[str, str]]]:
         """Estimate transit time"""
         service: str = "rest/TimeInTransit"
 
