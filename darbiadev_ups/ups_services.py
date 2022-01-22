@@ -7,9 +7,11 @@ from typing import Any, Final
 
 import requests
 
-from darbiadev_ups.lib.helpers import (parse_address_validation_response,
-                                       parse_time_in_transit_response,
-                                       parse_tracking_response)
+from darbiadev_ups.lib.helpers import (
+    parse_address_validation_response,
+    parse_time_in_transit_response,
+    parse_tracking_response,
+)
 
 
 class _AuthType(Enum):
