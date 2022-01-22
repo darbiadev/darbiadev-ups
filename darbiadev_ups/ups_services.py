@@ -7,7 +7,7 @@ from typing import Final, Union, Any
 
 import requests
 
-from darbiadev_ups.helpers import (
+from darbiadev_ups.lib.helpers import (
     parse_address_validation_response,
     parse_time_in_transit_response,
     parse_tracking_response,
