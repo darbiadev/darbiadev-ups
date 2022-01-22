@@ -2,7 +2,6 @@
 """helpers"""
 
 import datetime
-from typing import Any, Union
 
 from benedict import benedict
 
@@ -39,7 +38,7 @@ def parse_tracking_response(response: dict) -> dict:
 
 def parse_address_validation_response(
     response: dict,
-) -> dict[str, Union[Union[None, str, list], Any]]:
+) -> dict[str, str | benedict | dict | None]:
     """Parse address validation data"""
     data: benedict = benedict(response)
 
@@ -95,7 +94,7 @@ def parse_address_validation_response(
 
 def parse_time_in_transit_response(
     response: dict,
-) -> dict[str, Union[str, list[dict[str, str]]]]:
+) -> dict[str, str | list[dict[str, str]]]:
     """Parse time in transit data"""
     data: benedict = benedict(response)
     alert: str = data.get("TimeInTransitResponse.Response.Alert.Description")

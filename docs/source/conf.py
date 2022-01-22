@@ -69,7 +69,9 @@ def linkcode_resolve(domain, info):
     if not info["module"]:
         return None
 
-    import importlib, inspect, types
+    import importlib
+    import inspect
+    import types
 
     mod = importlib.import_module(info["module"])
 
