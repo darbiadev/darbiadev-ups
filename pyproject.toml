@@ -2,7 +2,7 @@
 name = "darbiadev-ups"
 version = "0.6.0"
 description = "darbiadev-ups"
-readme="README.md"
+readme = "README.md"
 authors = [
     { name = "Bradley Reynolds", email = "bradley.reynolds@darbia.dev" },
 ]
@@ -59,5 +59,10 @@ addopts = "tests -r a -v --doctest-modules darbiadev_ups"
 
 [tool.pylint.format]
 max-line-length = 120
+
 [tool.pylint.messages_control]
 disable = "R1705, R0913, R0914"
+# justifications:
+# R1705 (no-else-return) - else-return returns error
+# R0913 (too-many-arguments) - addresses have lots of fields
+# R0914 (too-many-locals) - addresses have lots of fields
