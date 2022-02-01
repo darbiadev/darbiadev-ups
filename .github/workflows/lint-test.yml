@@ -58,7 +58,7 @@ jobs:
           key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-pdm-${{ hashFiles('**/pyproject.toml') }}
 
       - name: Install dependencies
-        run: pdm sync
+        run: pdm install
 
       # Check all of our non-dev dependencies are compatible with the MIT license.
       # If you added a new dependencies that is being rejected,
