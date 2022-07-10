@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-"""client tests"""
+"""Testing the client"""
 
 import pytest
 
@@ -7,7 +6,7 @@ from darbiadev_ups import UPSServices
 
 
 def test_invalid_auth_type_error():
-    """Error on invalid auth types"""
+    """An invalid auth type should cause a ValueError"""
     with pytest.raises(ValueError):
         client = UPSServices(
             base_url="test",
@@ -15,7 +14,7 @@ def test_invalid_auth_type_error():
             password="test",
             access_license_number="test",
         )
-        client._make_request(
+        client.make_request(
             method="test",
             auth_type="test",
             service="test",

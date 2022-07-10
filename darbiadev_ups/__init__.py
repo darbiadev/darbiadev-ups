@@ -1,4 +1,3 @@
-#!/usr/bin/env python
-"""UPS Services"""
+"""A wrapper for UPS' API"""
 
 from .ups_services import UPSServices

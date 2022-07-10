@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """helpers"""
 
 import datetime

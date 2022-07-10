@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """UPSServices"""
 
 from datetime import datetime
@@ -7,7 +6,7 @@ from typing import Any, Final
 
 import requests
 
-from darbiadev_ups.lib.helpers import (
+from darbiadev_ups.helpers import (
     parse_address_validation_response,
     parse_time_in_transit_response,
     parse_tracking_response,
@@ -59,7 +58,8 @@ class UPSServices:
             }
         }
 
-    def _make_request(self, method: str, auth_type: _AuthType, service: str, data: dict[str, Any]) -> dict:
+    def make_request(self, method: str, auth_type: _AuthType, service: str, data: dict[str, Any]) -> dict:
+        """Make a request to UPS' API"""
         args = {"method": method, "url": self.base_url + service, "json": data}
 
         if auth_type == _AuthType.HEADERS:
@@ -88,7 +88,7 @@ class UPSServices:
             }
         }
 
-        response = self._make_request(method="POST", auth_type=_AuthType.JSON, service=service, data=data)
+        response = self.make_request(method="POST", auth_type=_AuthType.JSON, service=service, data=data)
         return parse_tracking_response(response)
 
     def validate_address(
@@ -114,7 +114,7 @@ class UPSServices:
             }
         }
 
-        response = self._make_request(method="POST", auth_type=_AuthType.HEADERS, service=service, data=data)
+        response = self.make_request(method="POST", auth_type=_AuthType.HEADERS, service=service, data=data)
         return parse_address_validation_response(response)
 
     def time_in_transit(
@@ -164,5 +164,5 @@ class UPSServices:
             }
         }
 
-        response = self._make_request(method="POST", auth_type=_AuthType.JSON, service=service, data=data)
+        response = self.make_request(method="POST", auth_type=_AuthType.JSON, service=service, data=data)
         return parse_time_in_transit_response(response)
