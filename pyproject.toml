@@ -1,7 +1,7 @@
 [project]
 name = "darbiadev-ups"
 version = "0.6.0"
-description = "darbiadev-ups"
+description = "A wrapper for UPS' API"
 readme = "README.md"
 authors = [
     { name = "Bradley Reynolds", email = "bradley.reynolds@darbia.dev" },
@@ -10,7 +10,6 @@ license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = [
     "requests>=2.26.0",
-    "python-benedict>=0.24.3",
 ]
 
 [project.urls]
@@ -24,7 +23,6 @@ documentation = "https://darbia.dev/darbiadev-ups/"
 [tool.pdm.dev-dependencies]
 dev = [
     "pip-licenses>=3.5.3",
-    "taskipy>=1.9.0",
     "pre-commit>=2.16.0",
     "pylint>=2.12.2",
     "pytest>=6.2.5",
@@ -64,8 +62,10 @@ addopts = "tests -r a -v --doctest-modules darbiadev_ups"
 max-line-length = 120
 
 [tool.pylint.messages_control]
-disable = "R1705, R0913, R0914"
+disable = "R1705, R0912, R0913, R0914, R0801"
 # justifications:
 # R1705 (no-else-return) - else-return returns error
+# R0913 (too-many-arguments) - lots of inconsistencies in the API's responses
 # R0913 (too-many-arguments) - addresses have lots of fields
 # R0914 (too-many-locals) - addresses have lots of fields
+# R0801 (duplicate-code) - FIXME: detecting withing the same file?
