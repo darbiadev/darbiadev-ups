@@ -27,34 +27,39 @@ def parse_tracking_response(response: dict, include_original: bool = False) -> d
     if error is not None:
         output = {"external_error": error}
 
-    package_data: str | None = get_nested_dict_value(response, "TrackResponse.Shipment.Package")
+    package_data: dict | list[dict] = get_nested_dict_value(response, "TrackResponse.Shipment.Package")
     if package_data is not None:
-        data = {
-            "packages": {},
-        }
+        data = {}
 
         shipment_references = set()
-        shipment_reference_data: list | None = get_nested_dict_value(response, "TrackResponse.Shipment.ReferenceNumber")
-        if shipment_reference_data is not None:
-            for shipment_reference in shipment_reference_data:
-                shipment_references.add(shipment_reference["Value"])
-        data["shipment_references"] = list(data["shipment_references"])
+        shipment_reference_data: list = get_nested_dict_value(response, "TrackResponse.Shipment.ReferenceNumber")
+        if isinstance(shipment_reference_data, dict):
+            shipment_reference_data = [shipment_reference_data]
+        for shipment_reference in shipment_reference_data:
+            shipment_references.add(shipment_reference["Value"])
+        data["shipment_references"] = list(shipment_references)
 
-        packages: list[dict] = list(package_data)
-        for package in packages:
+        packages = {}
+        if isinstance(package_data, dict):
+            package_data = [package_data]
+        for package in package_data:
             package_tracking_number = package.get("TrackingNumber")
 
             package_references = set()
-            for package_references_data in package.get("ReferenceNumber", []):
-                package_references.add(package_references_data["Value"])
+            package_references_data = package.get("ReferenceNumber")
+            if isinstance(package_references_data, dict):
+                package_references_data = [package_references_data]
+            for package_reference in package_references_data:
+                package_references.add(package_reference["Value"])
 
             most_recent_activity = package.get("Activity")[0]
             most_recent_activity_status = most_recent_activity["Status"]["Description"]
 
-            data["packages"][package_tracking_number] = {
+            packages[package_tracking_number] = {
                 "status": most_recent_activity_status,
                 "references": list(package_references),
             }
+        data["packages"] = packages
 
         output = data
 
