@@ -1,5 +1,5 @@
-:mod:`darbiadev_ups.lib.helpers` --- Helper functions
-=====================================================
+:mod:`darbiadev_ups.helpers` --- Helper functions
+=================================================
 
-.. automodule:: darbiadev_ups.lib.helpers
+.. automodule:: darbiadev_ups.helpers
    :members:
