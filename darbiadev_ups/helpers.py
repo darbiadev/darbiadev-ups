@@ -1,129 +1,152 @@
 """helpers"""
 
-import datetime
+from datetime import datetime
+from typing import Any
 
-from benedict import benedict
+
+def get_nested_dict_value(dct: dict, keypath: str, default=None, separator: str = ".") -> Any:
+    """Parse nested values from dictionaries"""
+    keys = keypath.split(separator)
+
+    value = dct
+    for key in keys:
+        value = value.get(key)
+
+        if not value:
+            value = default
+            break
+
+    return value
 
 
-def parse_tracking_response(response: dict) -> dict:
+def parse_tracking_response(response: dict, include_original: bool = False) -> dict:
     """Parse tracking data"""
-    data: benedict = benedict(response)
+    output = {}
 
-    if result := data.get("TrackResponse.Shipment.Package"):
-        return_value = {
-            "_original": response,
-            "shipment_references": set(
-                dct["Value"] for dct in (data.get("TrackResponse.Shipment.ReferenceNumber") or [])
-            ),
+    error: str | None = get_nested_dict_value(response, "Fault.detail.Errors.ErrorDetail.PrimaryErrorCode")
+    if error is not None:
+        output = {"external_error": error}
+
+    package_data: str | None = get_nested_dict_value(response, "TrackResponse.Shipment.Package")
+    if package_data is not None:
+        data = {
             "packages": {},
         }
 
-        if not isinstance(result, list):
-            result = [result]
-        packages: list[dict] = [benedict(r) for r in result]
+        shipment_references = set()
+        shipment_reference_data: list | None = get_nested_dict_value(response, "TrackResponse.Shipment.ReferenceNumber")
+        if shipment_reference_data is not None:
+            for shipment_reference in shipment_reference_data:
+                shipment_references.add(shipment_reference["Value"])
+        data["shipment_references"] = list(data["shipment_references"])
 
+        packages: list[dict] = list(package_data)
         for package in packages:
-            return_value["packages"][package.get("TrackingNumber")] = {
-                "status": package.get("Activity[0].Status.Description"),
-                "references": [dct["Value"] for dct in (package.get("ReferenceNumber") or [])],
+            package_tracking_number = package.get("TrackingNumber")
+
+            package_references = set()
+            for package_references_data in package.get("ReferenceNumber", []):
+                package_references.add(package_references_data["Value"])
+
+            most_recent_activity = package.get("Activity")[0]
+            most_recent_activity_status = most_recent_activity["Status"]["Description"]
+
+            data["packages"][package_tracking_number] = {
+                "status": most_recent_activity_status,
+                "references": list(package_references),
             }
 
-        return_value["shipment_references"] = list(return_value["shipment_references"])
-        return return_value
-    elif error := data.get("Fault.detail.Errors.ErrorDetail.PrimaryErrorCode"):
-        return {"external_error": error}
-    return {"error": "unknown response", "full_response": data}
+        output = data
+
+    if len(output.keys()) == 0:
+        output = {"error": "failed to parse response"}
+
+    if include_original:
+        output = {"_original": response} | output
+
+    return output
 
 
-def parse_address_validation_response(
-    response: dict,
-) -> dict[str, str | benedict | dict | None]:
+def parse_address_validation_response(response: dict, include_original: bool = False) -> dict:
     """Parse address validation data"""
-    data: benedict = benedict(response)
 
-    result = {
-        "_original": response,
+    output = {
         "status": None,
         "classification": "",
         "street_address": "",
         "region": "",
     }
 
+    errors: list[str] | None = get_nested_dict_value(response, "response.errors")
+    if errors is not None:
+        output["status"] = "\n".join(errors)
+
+    # Remove the top level wrapper
     try:
-        if "response.errors" in data:
-            result["street_address"] = "ERROR(S) VALIDATING ADDRESS"
-            result["region"] = [error.get("message") for error in data["response.errors"]]
-            return result
-
-        if "XAVResponse.NoCandidatesIndicator" in data:
-            result["street_address"] = "Address unknown"
-            result["region"] = "No candidates"
-            return result
-
-        if data.get("XAVResponse.AddressClassification.Description", "") == "Unknown":
-            result["street_address"] = "Address unknown"
-            result["region"] = "No candidates"
-            return result
-
-        result["classification"] = data.get("XAVResponse.Candidate.AddressClassification.Description", "Unknown")
-
-        candidates = data["XAVResponse.Candidate"]
-        if not isinstance(candidates, list):
-            candidates = [candidates]
-        first_candidate = benedict(candidates[0])
-
-        result["classification"] = first_candidate.get("AddressClassification.Description", "Unknown")
-
-        street_address = first_candidate["AddressKeyFormat.AddressLine"]
-        if isinstance(street_address, list):
-            result["street_address"] = " ".join(street_address)
-        else:
-            result["street_address"] = street_address
-
-        result["region"] = first_candidate["AddressKeyFormat.Region"]
-        if "ValidAddressIndicator" in data["XAVResponse"]:
-            result["status"] = "Valid"
-        return result
-
+        response = response["XAVResponse"]
     except KeyError:
-        result["street_address"] = "SYSTEM ERROR"
-        result["region"] = "Failed to validate address"
-        return result
+        pass
+
+    no_candidates_indicator: str | None = get_nested_dict_value(response, "NoCandidatesIndicator")
+    valid_address_indicator: str | None = get_nested_dict_value(response, "ValidAddressIndicator")
+
+    if no_candidates_indicator is not None:
+        output["status"] = "Address unknown, No candidates"
+
+    address_classification: str | None = get_nested_dict_value(response, "AddressClassification.Description")
+    if address_classification == "Unknown":
+        output["status"] = "Address unknown, No candidates"
+
+    if output["status"] is None:
+        candidates = list(response["Candidate"])
+        first_candidate = candidates[0]
+
+        output["classification"] = get_nested_dict_value(
+            first_candidate, "AddressClassification.Description", "Unknown"
+        )
+
+        street_address = get_nested_dict_value(first_candidate, "AddressKeyFormat.AddressLine")
+        output["street_address"] = " ".join(list(street_address))
+
+        output["region"] = get_nested_dict_value(first_candidate, "AddressKeyFormat.Region")
+
+        if valid_address_indicator is not None:
+            output["status"] = "Valid"
+
+    if include_original:
+        output = {"_original": response} | output
+
+    return output
 
 
-def parse_time_in_transit_response(
-    response: dict,
-) -> dict[str, str | list[dict[str, str]]]:
+def parse_time_in_transit_response(response: dict, include_original: bool = False) -> dict:
     """Parse time in transit data"""
-    data: benedict = benedict(response)
-    alert: str = data.get("TimeInTransitResponse.Response.Alert.Description")
-    result = {"_original": response, "alert": alert, "services": []}
+    alert: str = get_nested_dict_value(response, "TimeInTransitResponse.Response.Alert.Description")
 
-    try:
-        services = data.get("TimeInTransitResponse.TransitResponse.ServiceSummary")
-    except KeyError:
-        return result
+    output = {
+        "alert": alert,
+        "services": [],
+    }
 
-    for service in services:
-        service = benedict(service)
+    service_data = get_nested_dict_value(response, "TimeInTransitResponse.TransitResponse.ServiceSummary", [])
+    for service in service_data:
+        service_name = get_nested_dict_value(service, "Service.Description")
 
-        service_name = service.get("Service.Description")
+        pickup_date = get_nested_dict_value(service, "EstimatedArrival.Pickup.Date")
+        pickup_time = get_nested_dict_value(service, "EstimatedArrival.Pickup.Time")
+        pickup_datetime = datetime.strptime(pickup_date + pickup_time, "%Y%m%d%H%M%S")
 
-        pickup_date = service.get("EstimatedArrival.Pickup.Date")
-        pickup_time = service.get("EstimatedArrival.Pickup.Time")
-        pickup_datetime = datetime.datetime.strptime(pickup_date + pickup_time, "%Y%m%d%H%M%S")
+        arrival_date = get_nested_dict_value(service, "EstimatedArrival.Arrival.Date")
+        arrival_time = get_nested_dict_value(service, "EstimatedArrival.Arrival.Time")
+        arrival_datetime = datetime.strptime(arrival_date + arrival_time, "%Y%m%d%H%M%S")
 
-        arrival_date = service.get("EstimatedArrival.Arrival.Date")
-        arrival_time = service.get("EstimatedArrival.Arrival.Time")
-        arrival_datetime = datetime.datetime.strptime(arrival_date + arrival_time, "%Y%m%d%H%M%S")
-
-        business_days_in_transit = service.get("EstimatedArrival.BusinessDaysInTransit")
-        day_of_week = service.get("EstimatedArrival.DayOfWeek")
-        customer_center_cutoff = datetime.datetime.strptime(
-            service.get("EstimatedArrival.CustomerCenterCutoff"), "%H%M%S"
+        business_days_in_transit = get_nested_dict_value(service, "EstimatedArrival.BusinessDaysInTransit")
+        day_of_week = get_nested_dict_value(service, "EstimatedArrival.DayOfWeek")
+        customer_center_cutoff = datetime.strptime(
+            get_nested_dict_value(service, "EstimatedArrival.CustomerCenterCutoff"), "%H%M%S"
         ).time()
 
-        result["services"].append(
+        output["services"].append(
             {
                 "service_name": service_name,
                 "pickup_time": str(pickup_datetime),
@@ -134,4 +157,7 @@ def parse_time_in_transit_response(
             }
         )
 
-    return result
+    if include_original:
+        output = {"_original": response} | output
+
+    return output
