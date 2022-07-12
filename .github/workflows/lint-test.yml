@@ -18,37 +18,14 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      # List of licenses that are compatible with the MIT License and
-      # can be used in our project
-      ALLOWED_LICENSE: Apache Software License;
-        BSD License;
-        GNU Library or Lesser General Public License (LGPL);
-        ISC License (ISCL);
-        MIT License;
-        Mozilla Public License 2.0 (MPL 2.0);
-        Public Domain;
-        Python Software Foundation License;
-
-      # Configure pip to cache dependencies and do a user install
-      PIP_NO_CACHE_DIR: false
-      PIP_USER: 1
-
-      # Specify explicit paths for python dependencies and the pre-commit
-      # environment, so we know which directories to cache
-      PYTHONUSERBASE: ${{ github.workspace }}/.cache/py-user-base
-      PRE_COMMIT_HOME: ${{ github.workspace }}/.cache/pre-commit-cache
-
-      CACHE_VERSION: v1
+      CACHE_VERSION: v4
 
     steps:
-      - name: Add custom PYTHONUSERBASE to PATH
-        run: echo '${{ env.PYTHONUSERBASE }}/bin/' >> $GITHUB_PATH
-
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up PDM
-        uses: pdm-project/setup-pdm@main
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -59,35 +36,11 @@ jobs:
           path: ./__pypackages__
           key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-pdm-${{ hashFiles('**/pyproject.toml') }}
 
+      - name: Install PDM
+        run: pip install pdm
+
       - name: Install dependencies
-        run: pdm install
-
-      # Check all of our non-dev dependencies are compatible with the MIT license.
-      # If you added a new dependencies that is being rejected,
-      # please make sure it is compatible with the license for this project,
-      # and add it to the ALLOWED_LICENSE variable
-      - name: Check Dependencies License
-        run: |
-          pip install pip-licenses
-          pip-licenses --allow-only="$ALLOWED_LICENSE" \
-            --package $(pdm export --format=requirements --without-hashes --production 2>/dev/null | sed "s/==.*//g" | tr "\n" " ")
-
-      # This step caches our pre-commit environment. To make sure we
-      # do create a new environment when our pre-commit setup changes,
-      # we create a cache key based on relevant factors.
-      - name: Pre-commit Environment Caching
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.PRE_COMMIT_HOME }}
-          key: "precommit-0-${{ runner.os }}-${{ env.PRE_COMMIT_HOME }}-\
-          ${{ steps.python.outputs.python-version }}-\
-          ${{ hashFiles('./.pre-commit-config.yaml') }}"
-
-      # We will not run `pylint` here, as we will use a separate pylint
-      # action. As pre-commit does not support user installs, we set
-      # PIP_USER=0 to not do a user install.
-      - name: Run pre-commit hooks
-        run: export PIP_USER=0; SKIP=pylint pdm run pre-commit run --all-files
+        run: python -m pdm install
 
       # Run pylint and have it format the linting errors in the format of
       # the GitHub Workflow command to register error annotations. This
@@ -98,8 +51,8 @@ jobs:
       # Format used:
       # ::error file={filename},line={line},col={col}::{message}
       - name: Run pylint
-        run: "pdm run pylint src/ \
+        run: "python -m pdm run pylint src/ \
         --msg-template='::error file={path},line={line},col={column}::[pylint] {category} {msg_id}: {msg}'"
 
       - name: Run tests and generate coverage report
-        run: pdm run pytest --cov --disable-warnings -q
+        run: python -m pdm run pytest --cov --disable-warnings -q
