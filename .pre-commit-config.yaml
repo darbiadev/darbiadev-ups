@@ -23,12 +23,3 @@ repos:
     hooks:
       - id: black
         language_version: python3.10
-  - repo: local
-    hooks:
-      - id: pylint
-        name: Pylint
-        description: This hook runs pylint within the project's environment.
-        entry: pdm run pylint darbiadev_ups/
-        language: system
-        types: [ python ]
-        require_serial: true
