@@ -38,7 +38,7 @@ jobs:
       PYTHONUSERBASE: ${{ github.workspace }}/.cache/py-user-base
       PRE_COMMIT_HOME: ${{ github.workspace }}/.cache/pre-commit-cache
 
-      CACHE_VERSION: v2
+      CACHE_VERSION: v3
 
     steps:
       - name: Add custom PYTHONUSERBASE to PATH
@@ -47,8 +47,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up PDM
-        uses: pdm-project/setup-pdm@main
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -60,7 +60,7 @@ jobs:
           key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-pdm-${{ hashFiles('**/pyproject.toml') }}
 
       - name: Install dependencies
-        run: pdm install
+        run: pip install pdm; pdm install
 
       # Check all of our non-dev dependencies are compatible with the MIT license.
       # If you added a new dependencies that is being rejected,
