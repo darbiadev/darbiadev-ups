@@ -60,7 +60,7 @@ jobs:
           key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-pdm-${{ hashFiles('**/pyproject.toml') }}
 
       - name: Install dependencies
-        run: pdm install
+        run: python -m pdm install
 
       # Check all of our non-dev dependencies are compatible with the MIT license.
       # If you added a new dependencies that is being rejected,
@@ -87,7 +87,7 @@ jobs:
       # action. As pre-commit does not support user installs, we set
       # PIP_USER=0 to not do a user install.
       - name: Run pre-commit hooks
-        run: export PIP_USER=0; SKIP=pylint pdm run pre-commit run --all-files
+        run: export PIP_USER=0; SKIP=pylint python -m pdm run pre-commit run --all-files
 
       # Run pylint and have it format the linting errors in the format of
       # the GitHub Workflow command to register error annotations. This
@@ -98,8 +98,8 @@ jobs:
       # Format used:
       # ::error file={filename},line={line},col={col}::{message}
       - name: Run pylint
-        run: "pdm run pylint src/ \
+        run: "python -m pdm run pylint src/ \
         --msg-template='::error file={path},line={line},col={column}::[pylint] {category} {msg_id}: {msg}'"
 
       - name: Run tests and generate coverage report
-        run: pdm run pytest --cov --disable-warnings -q
+        run: python -m pdm run pytest --cov --disable-warnings -q
