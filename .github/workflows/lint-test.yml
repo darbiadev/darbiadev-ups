@@ -58,8 +58,11 @@ jobs:
           path: ./__pypackages__
           key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-pdm-${{ hashFiles('**/pyproject.toml') }}
 
+      - name: Install PDM
+        run: pip install pdm
+
       - name: Install dependencies
-        run: pip install pdm; pdm install
+        run: python -m pdm install
 
       # Check all of our non-dev dependencies are compatible with the MIT license.
       # If you added a new dependencies that is being rejected,
