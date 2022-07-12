@@ -29,10 +29,6 @@ jobs:
         Public Domain;
         Python Software Foundation License;
 
-      # Configure pip to cache dependencies and do a user install
-      PIP_NO_CACHE_DIR: false
-      PIP_USER: 1
-
       # Specify explicit path for the pre-commit
       # environment, so we know which directory to cache
       PRE_COMMIT_HOME: ${{ github.workspace }}/.cache/pre-commit-cache
