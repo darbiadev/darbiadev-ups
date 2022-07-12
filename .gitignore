@@ -4,7 +4,6 @@
 # PDM
 __pypackages__
 .pdm.toml
-pdm.lock
 
 # Packaging
 darbiadev_ups.egg-info
