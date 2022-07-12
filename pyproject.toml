@@ -56,7 +56,7 @@ line-length = 120
 profile = "black"
 
 [tool.pytest.ini_options]
-addopts = "tests -r a -v --doctest-modules darbiadev_ups"
+addopts = "tests -r a -v --doctest-modules src"
 
 [tool.pylint.format]
 max-line-length = 120
