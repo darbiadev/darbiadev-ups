@@ -62,10 +62,11 @@ addopts = "tests -r a -v --doctest-modules darbiadev_ups"
 max-line-length = 120
 
 [tool.pylint.messages_control]
-disable = "R1705, R0912, R0913, R0914, R0801"
+disable = "R1705, R0912, R0913, R0914, R0801, C0103"
 # justifications:
 # R1705 (no-else-return) - else-return returns error
 # R0913 (too-many-arguments) - lots of inconsistencies in the API's responses
 # R0913 (too-many-arguments) - addresses have lots of fields
 # R0914 (too-many-locals) - addresses have lots of fields
 # R0801 (duplicate-code) - FIXME: detecting withing the same file?
+# C0103 (invalid-name) - FIXME: false positive?
