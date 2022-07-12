@@ -96,7 +96,7 @@ jobs:
       # Format used:
       # ::error file={filename},line={line},col={col}::{message}
       - name: Run pylint
-        run: "pdm run pylint darbiadev_ups/ \
+        run: "pdm run pylint src/ \
         --msg-template='::error file={path},line={line},col={column}::[pylint] {category} {msg_id}: {msg}'"
 
       - name: Run tests and generate coverage report
