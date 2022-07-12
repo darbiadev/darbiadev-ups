@@ -18,16 +18,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      # Specify explicit path for the pre-commit
-      # environment, so we know which directory to cache
-      PRE_COMMIT_HOME: ${{ github.workspace }}/.cache/pre-commit-cache
-
       CACHE_VERSION: v4
 
     steps:
-      - name: Add custom PYTHONUSERBASE to PATH
-        run: echo '${{ env.PYTHONUSERBASE }}/bin/' >> $GITHUB_PATH
-
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -48,23 +41,6 @@ jobs:
 
       - name: Install dependencies
         run: python -m pdm install
-
-      # This step caches our pre-commit environment. To make sure we
-      # do create a new environment when our pre-commit setup changes,
-      # we create a cache key based on relevant factors.
-      - name: Pre-commit Environment Caching
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.PRE_COMMIT_HOME }}
-          key: "precommit-0-${{ runner.os }}-${{ env.PRE_COMMIT_HOME }}-\
-          ${{ steps.python.outputs.python-version }}-\
-          ${{ hashFiles('./.pre-commit-config.yaml') }}"
-
-      # We will not run `pylint` here, as we will use a separate pylint
-      # action. As pre-commit does not support user installs, we set
-      # PIP_USER=0 to not do a user install.
-      - name: Run pre-commit hooks
-        run: python -m pdm run pre-commit run --all-files
 
       # Run pylint and have it format the linting errors in the format of
       # the GitHub Workflow command to register error annotations. This
