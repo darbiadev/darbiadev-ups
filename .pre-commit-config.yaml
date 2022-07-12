@@ -28,7 +28,7 @@ repos:
       - id: pylint
         name: Pylint
         description: This hook runs pylint within the project's environment.
-        entry: pdm run pylint darbiadev_ups/
+        entry: pdm run pylint src/
         language: system
         types: [ python ]
         require_serial: true
