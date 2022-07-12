@@ -33,12 +33,11 @@ jobs:
       PIP_NO_CACHE_DIR: false
       PIP_USER: 1
 
-      # Specify explicit paths for python dependencies and the pre-commit
-      # environment, so we know which directories to cache
-      PYTHONUSERBASE: ${{ github.workspace }}/.cache/py-user-base
+      # Specify explicit path for the pre-commit
+      # environment, so we know which directory to cache
       PRE_COMMIT_HOME: ${{ github.workspace }}/.cache/pre-commit-cache
 
-      CACHE_VERSION: v3
+      CACHE_VERSION: v4
 
     steps:
       - name: Add custom PYTHONUSERBASE to PATH
