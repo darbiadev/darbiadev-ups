@@ -1,0 +1,4 @@
+sphinx
+sphinxcontrib-autoprogram
+sphinx-rtd-theme
+toml
