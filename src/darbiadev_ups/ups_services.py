@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Final
+from typing import Any
 
 import requests
 
@@ -13,6 +13,11 @@ from darbiadev_ups.helpers import (
     parse_time_in_transit_response,
     parse_tracking_response,
 )
+
+try:
+    from typing import Final
+except ImportError:
+    from typing_extensions import Final
 
 
 class _AuthType(Enum):
