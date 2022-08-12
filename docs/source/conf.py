@@ -89,7 +89,7 @@ def linkcode_resolve(domain, info):
     filename = info["module"].replace(".", "/") + ".py"
 
     if isinstance(
-            val,
+        val,
         (
             types.ModuleType,
             types.MethodType,
