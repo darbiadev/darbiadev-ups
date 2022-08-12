@@ -103,7 +103,7 @@ def linkcode_resolve(domain, info):
             lines, first = inspect.getsourcelines(val)
             last = first + len(lines) - 1
             filename += f"#L{first}-L{last}"
-        except (IOError, TypeError):
+        except (OSError, TypeError):
             pass
 
     return f"{git_url}/blob/main/{filename}"
