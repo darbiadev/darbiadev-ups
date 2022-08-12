@@ -2,8 +2,8 @@
 .idea
 
 # PDM
-__pypackages__
 .pdm.toml
+.venv
 
 # Packaging
 darbiadev_ups.egg-info
