@@ -34,10 +34,10 @@ class UPSServices:
 
     TRACKING_REGEX: Final[str] = r"1Z[A-Z0-9]{6}[0-9]{10}"
     TRACKING_URL: Final[
-        str
-    ] = "https://wwwapps.ups.com/WebTracking/processInputRequest?TypeOfInquiryNumber=T&InquiryNumber1={tracking_number}"
+        str] = "https://wwwapps.ups.com/WebTracking/processInputRequest?TypeOfInquiryNumber=T&InquiryNumber1={tracking_number}"
 
-    def __init__(self, base_url: str, username: str, password: str, access_license_number: str):
+    def __init__(self, base_url: str, username: str, password: str,
+                 access_license_number: str):
         self.base_url: str = base_url
         self.__username: str = username
         self.__password: str = password
@@ -65,7 +65,8 @@ class UPSServices:
             }
         }
 
-    def make_request(self, method: str, auth_type: _AuthType, service: str, data: dict[str, Any]) -> dict:
+    def make_request(self, method: str, auth_type: _AuthType, service: str,
+                     data: dict[str, Any]) -> dict:
         """Make a request to UPS' API"""
         args = {"method": method, "url": self.base_url + service, "json": data}
 
@@ -88,14 +89,18 @@ class UPSServices:
                 "Request": {
                     "RequestOption": "1",
                     "TransactionReference": {
-                        "CustomerContext": tracking_number + " " + str(datetime.now().isoformat())
+                        "CustomerContext":
+                        tracking_number + " " + str(datetime.now().isoformat())
                     },
                 },
                 "InquiryNumber": tracking_number,
             }
         }
 
-        response = self.make_request(method="POST", auth_type=_AuthType.JSON, service=service, data=data)
+        response = self.make_request(method="POST",
+                                     auth_type=_AuthType.JSON,
+                                     service=service,
+                                     data=data)
         return parse_tracking_response(response)
 
     def validate_address(
@@ -121,7 +126,10 @@ class UPSServices:
             }
         }
 
-        response = self.make_request(method="POST", auth_type=_AuthType.HEADERS, service=service, data=data)
+        response = self.make_request(method="POST",
+                                     auth_type=_AuthType.HEADERS,
+                                     service=service,
+                                     data=data)
         return parse_address_validation_response(response)
 
     def time_in_transit(
@@ -146,7 +154,8 @@ class UPSServices:
                 "Request": {
                     "RequestOption": "TNT",
                     "TransactionReference": {
-                        "CustomerContext": to_postal_code + " " + str(datetime.now().isoformat()),
+                        "CustomerContext":
+                        to_postal_code + " " + str(datetime.now().isoformat()),
                     },
                 },
                 "ShipFrom": {
@@ -163,13 +172,21 @@ class UPSServices:
                         "CountryCode": to_country,
                     }
                 },
-                "Pickup": {"Date": pickup_date},
+                "Pickup": {
+                    "Date": pickup_date
+                },
                 "ShipmentWeight": {
-                    "UnitOfMeasurement": {"Code": "LBS", "Description": "Pounds"},
+                    "UnitOfMeasurement": {
+                        "Code": "LBS",
+                        "Description": "Pounds"
+                    },
                     "Weight": weight,
                 },
             }
         }
 
-        response = self.make_request(method="POST", auth_type=_AuthType.JSON, service=service, data=data)
+        response = self.make_request(method="POST",
+                                     auth_type=_AuthType.JSON,
+                                     service=service,
+                                     data=data)
         return parse_time_in_transit_response(response)
