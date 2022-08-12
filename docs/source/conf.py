@@ -19,7 +19,7 @@ project_config = toml.load("../../pyproject.toml")
 project: str = project_config["project"]["name"]
 release: str = project_config["project"]["version"]
 git_url: str = project_config["project"]["urls"]["repository"]
-copyright: str = project_config["tool"]["sphinx"]["copyright"]  # pylint: disable=redefined-builtin
+copyright: str = project_config["tool"]["sphinx"]["copyright"]  # noqa: A001
 author: str = project_config["tool"]["sphinx"]["author"]
 api_dir: str = project_config["tool"]["sphinx"]["api_dir"]
 
@@ -89,7 +89,7 @@ def linkcode_resolve(domain, info):
     filename = info["module"].replace(".", "/") + ".py"
 
     if isinstance(
-            val,
+        val,
         (
             types.ModuleType,
             types.MethodType,
