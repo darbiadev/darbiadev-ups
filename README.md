@@ -1,6 +1,4 @@
 # darbiadev-ups
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdarbiadev%2Fdarbiadev-ups.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdarbiadev%2Fdarbiadev-ups?ref=badge_shield)
-
 
 This package provides a wrapper for UPS' API.
 
