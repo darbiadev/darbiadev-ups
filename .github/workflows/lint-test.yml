@@ -31,7 +31,7 @@ jobs:
           pip install pdm
           pdm export -o requirements.txt --without-hashes
           pip install -r requirements.txt
-          pip install .
+          pip install --editable .
 
       # Run pylint and have it format the linting errors in the format of
       # the GitHub Workflow command to register error annotations. This
