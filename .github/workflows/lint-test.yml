@@ -1,6 +1,7 @@
 name: Lint & Test
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -17,30 +18,20 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-    env:
-      CACHE_VERSION: v4
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Get cached dependencies
-        uses: actions/cache@v3
-        id: pdm-cache
-        with:
-          path: ./__pypackages__
-          key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-pdm-${{ hashFiles('**/pyproject.toml') }}
-
-      - name: Install PDM
-        run: pip install pdm
+          cache: 'pip'
 
       - name: Install dependencies
-        run: python -m pdm install
+        run: |
+          pip install pdm
+          pdm export -o requirements.txt --without-hashes
+          pip install -r requirements.txt   
 
       # Run pylint and have it format the linting errors in the format of
       # the GitHub Workflow command to register error annotations. This
@@ -51,8 +42,15 @@ jobs:
       # Format used:
       # ::error file={filename},line={line},col={col}::{message}
       - name: Run pylint
-        run: "python -m pdm run pylint src/ \
+        run: "python -m pylint src/ \
         --msg-template='::error file={path},line={line},col={column}::[pylint] {category} {msg_id}: {msg}'"
 
       - name: Run tests and generate coverage report
-        run: python -m pdm run pytest --cov --disable-warnings -q
+        run: python -m pytest --cov --disable-warnings -q --cov-report=xml
+
+      - name: Upload Coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10'
+        uses: codecov/codecov-action@v3.1.0
+        with:
+          fail_ci_if_error: true
+          verbose: true
