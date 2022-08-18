@@ -28,6 +28,7 @@ jobs:
           pip install pdm
           pdm export -o requirements.txt --without-hashes
           pip install -r requirements.txt
+          pip install .
 
       - name: Build docs
         run: cd docs; make html
