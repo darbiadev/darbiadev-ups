@@ -37,7 +37,13 @@ class UPSServices:
         str
     ] = "https://wwwapps.ups.com/WebTracking/processInputRequest?TypeOfInquiryNumber=T&InquiryNumber1={tracking_number}"
 
-    def __init__(self, base_url: str, username: str, password: str, access_license_number: str):
+    def __init__(
+        self,
+        base_url: str,
+        username: str,
+        password: str,
+        access_license_number: str,
+    ):
         self.base_url: str = base_url
         self.__username: str = username
         self.__password: str = password
@@ -65,9 +71,16 @@ class UPSServices:
             }
         }
 
-    def make_request(self, method: str, auth_type: _AuthType, service: str, data: dict[str, Any]) -> dict:
+    def make_request(
+        self,
+        method: str,
+        auth_type: _AuthType,
+        service: str,
+        data: dict[str, Any],
+        timeout: int = 500,
+    ) -> dict:
         """Make a request to UPS' API"""
-        args = {"method": method, "url": self.base_url + service, "json": data}
+        args = {"method": method, "url": self.base_url + service, "json": data, "timeout": timeout}
 
         if auth_type == _AuthType.HEADERS:
             args["headers"] = self.__auth_headers()
