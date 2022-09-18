@@ -1,10 +1,6 @@
 # JetBrains
 .idea
 
-# PDM
-__pypackages__
-.pdm.toml
-
 # Packaging
 darbiadev_ups.egg-info
 dist
@@ -14,9 +10,3 @@ __pycache__
 
 # Docs
 docs/build
-
-# Type checking
-.mypy_cache
-
-# Testing
-.coverage
