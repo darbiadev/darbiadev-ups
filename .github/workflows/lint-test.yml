@@ -45,7 +45,7 @@ jobs:
         run: python -m pytest --cov --disable-warnings -q --cov-report=xml
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3.1.0
+        uses: codecov/codecov-action@v3.1.1
         with:
           fail_ci_if_error: true
           flags: tests-${{ matrix.os }}-${{ matrix.python-version }}
