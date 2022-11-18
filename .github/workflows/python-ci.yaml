@@ -1,0 +1,29 @@
+name: Python CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+  pull_request:
+
+jobs:
+  lint-test:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+      fail-fast: false
+
+    uses: darbiadev/.github/.github/workflows/python-lint-test.yaml@main
+    with:
+      os: ${{ matrix.os }}
+      python-version: ${{ matrix.python-version }}
+    secrets: inherit
+
+  publish:
+    needs: lint-test
+    uses: darbiadev/.github/.github/workflows/python-pypi-publish.yaml@main
+    secrets: inherit
