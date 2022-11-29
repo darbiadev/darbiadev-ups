@@ -2,7 +2,7 @@
 .idea
 
 # Packaging
-darbiadev_ups.egg-info
+*.egg-info
 dist
 
 # Cache
