@@ -11,7 +11,7 @@ requires-python = ">=3.8"
 dependencies = [
     "requests",
     "darbiadev-utilities",
-    "typing-extensions; python_version < '3.11'",
+    "typing-extensions",
 ]
 
 [project.urls]
