@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Final
 
 import requests
 
@@ -13,8 +13,7 @@ from darbiadev_ups.helpers import (
     parse_time_in_transit_response,
     parse_tracking_response,
 )
-
-from typing import Final
+from darbiadev_ups.models import Shipment
 
 
 class _AuthType(Enum):
@@ -89,7 +88,7 @@ class UPSServices:
         response = requests.request(**args)
         return response.json()
 
-    def track(self, tracking_number: str) -> dict:
+    def track(self, tracking_number: str) -> Shipment:
         """Get tracking details for a tracking number"""
         service: str = "rest/Track"
 
