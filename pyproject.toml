@@ -15,7 +15,7 @@ dependencies = [
 
 [project.urls]
 repository = "https://github.com/darbiadev/darbiadev-ups/"
-documentation = "https://darbia.dev/darbiadev-ups/"
+documentation = "https://docs.darbia.dev/darbiadev-ups/"
 
 [project.optional-dependencies]
 dev = [
