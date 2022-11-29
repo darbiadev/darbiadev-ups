@@ -19,11 +19,9 @@ documentation = "https://docs.darbia.dev/darbiadev-ups/"
 
 [project.optional-dependencies]
 dev = [
-    "pylint",
-    "pytest",
-    "pytest-cov",
     "black",
     "isort",
+     "pylint",
 ]
 tests = [
     "pytest",
