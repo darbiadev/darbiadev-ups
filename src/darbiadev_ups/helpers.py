@@ -3,22 +3,8 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
 
-
-def get_nested_dict_value(dct: dict, keypath: str, default=None, separator: str = ".") -> Any:
-    """Parse nested values from dictionaries"""
-    keys = keypath.split(separator)
-
-    value = dct
-    for key in keys:
-        value = value.get(key)
-
-        if not value:
-            value = default
-            break
-
-    return value
+from darbia.utils.mappings import get_nested_dict_value
 
 
 def parse_tracking_response(response: dict, include_original: bool = False) -> dict:
@@ -49,12 +35,16 @@ def parse_tracking_response(response: dict, include_original: bool = False) -> d
 
             package_references = set()
             package_references_data = package.get("ReferenceNumber")
-            if isinstance(package_references_data, dict):
-                package_references_data = [package_references_data]
-            for package_reference in package_references_data:
-                package_references.add(package_reference["Value"])
+            if package_references_data is not None:
+                if isinstance(package_references_data, dict):
+                    package_references_data = [package_references_data]
+                for package_reference in package_references_data:
+                    package_references.add(package_reference["Value"])
 
-            most_recent_activity = package.get("Activity")[0]
+            activity = package.get("Activity")
+            if isinstance(activity, dict):
+                activity = [activity]
+            most_recent_activity = activity[0]
             most_recent_activity_status = most_recent_activity["Status"]["Description"]
 
             packages[package_tracking_number] = {
