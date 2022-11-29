@@ -169,7 +169,7 @@ class Shipment:
         if shipment_type_data := data.get("ShipmentType") is not None:
             shipment_type_ = ShipmentType.from_dict(shipment_type_data)
         else:
-            shipment_type_=None
+            shipment_type_ = None
         shipper_number_ = data.get("ShipperNumber")
         shipment_weight_ = ShipmentWeight.from_dict(data.get("ShipmentWeight"))
         service_ = Service.from_dict(data.get("Service"))
