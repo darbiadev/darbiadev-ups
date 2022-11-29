@@ -19,20 +19,20 @@ documentation = "https://docs.darbia.dev/darbiadev-ups/"
 
 [project.optional-dependencies]
 dev = [
-    "pylint>=2.12.2",
-    "pytest>=6.2.5",
-    "pytest-cov>=3.0.0",
-    "black>=21.12b0",
-    "isort>=5.10.1",
+    "pylint",
+    "pytest",
+    "pytest-cov",
+    "black",
+    "isort",
 ]
 tests = [
-    "pytest>=6.2.5",
+    "pytest",
 ]
 docs = [
-    "sphinx>=4.3.2",
-    "sphinxcontrib-autoprogram>=0.1.7",
-    "sphinx-rtd-theme>=1.0.0",
-    "toml>=0.10.2",
+    "sphinx",
+    "sphinxcontrib-autoprogram",
+    "sphinx-rtd-theme",
+    "toml",
 ]
 
 [build-system]
