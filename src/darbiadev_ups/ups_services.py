@@ -14,10 +14,7 @@ from darbiadev_ups.helpers import (
     parse_tracking_response,
 )
 
-try:
-    from typing import Final
-except ImportError:
-    from typing_extensions import Final
+from typing import Final
 
 
 class _AuthType(Enum):
