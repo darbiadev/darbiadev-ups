@@ -22,7 +22,7 @@ documentation = "https://docs.darbia.dev/darbiadev-ups/"
 dev = [
     "black",
     "isort",
-     "pylint",
+    "pylint",
 ]
 tests = [
     "pytest",
