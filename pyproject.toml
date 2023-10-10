@@ -7,62 +7,43 @@ authors = [
     { name = "Bradley Reynolds", email = "bradley.reynolds@darbia.dev" },
 ]
 license = { text = "MIT" }
-requires-python = ">=3.7"
-dependencies = [
-    "requests>=2.26.0",
-    "typing-extensions>=4.3.0; python_version < '3.8'",
-]
+requires-python = ">=3.8"
+dynamic = ["dependencies", "optional-dependencies"]
 
 [project.urls]
 repository = "https://github.com/darbiadev/darbiadev-ups/"
 documentation = "https://darbia.dev/darbiadev-ups/"
 
-[project.optional-dependencies]
-dev = [
-    "pylint>=2.12.2",
-    "pytest>=6.2.5",
-    "pytest-cov>=3.0.0",
-    "black>=21.12b0",
-    "isort>=5.10.1",
-]
-tests = [
-    "pytest>=6.2.5",
-]
-docs = [
-    "sphinx>=4.3.2",
-    "sphinxcontrib-autoprogram>=0.1.7",
-    "sphinx-rtd-theme>=1.0.0",
-    "toml>=0.10.2",
-]
-
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.sphinx]
-copyright = "Darbia"
-author = "Bradley Reynolds"
-api_dir = "darbiadev_ups"
+[tool.setuptools.dynamic.dependencies]
+file = ["requirements/requirements.txt"]
+
+[tool.setuptools.dynamic.optional-dependencies]
+dev = { file = ["requirements/requirements-dev.txt"] }
+tests = { file = ["requirements/requirements-tests.txt"] }
+docs = { file = ["requirements/requirements-docs.txt"] }
 
 [tool.black]
-target-version = ["py310"]
+target-version = ["py38"]
 line-length = 120
 
-[tool.isort]
-profile = "black"
+[tool.ruff]
+target-version = "py38"
+line-length = 120
+select = ["ALL"]
+ignore = []
 
-[tool.pytest.ini_options]
-addopts = "tests -r a -v --doctest-modules src"
+[tool.ruff.extend-per-file-ignores]
+"docs/*" = [
+    "INP001", # (File `tests/*.py` is part of an implicit namespace package. Add an `__init__.py`.) - Docs are not modules
+]
+"tests/*" = [
+    "INP001", # (File `tests/*.py` is part of an implicit namespace package. Add an `__init__.py`.) - Tests are not modules
+    "S101", # (Use of `assert` detected) - Yes, that's the point
+]
 
-[tool.pylint.format]
-max-line-length = 120
-
-[tool.pylint.messages_control]
-disable = "R1705, R0912, R0913, R0914, R0801, C0103"
-# justifications:
-# R1705 (no-else-return) - else-return returns error
-# R0913 (too-many-arguments) - lots of inconsistencies in the API's responses
-# R0913 (too-many-arguments) - addresses have lots of fields
-# R0914 (too-many-locals) - addresses have lots of fields
-# R0801 (duplicate-code) - FIXME: detecting withing the same file?
-# C0103 (invalid-name) - FIXME: false positive?
+[tool.ruff.pydocstyle]
+convention = "numpy"
