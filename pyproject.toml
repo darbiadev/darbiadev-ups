@@ -27,7 +27,7 @@ tests = { file = ["requirements/requirements-tests.txt"] }
 docs = { file = ["requirements/requirements-docs.txt"] }
 
 [tool.black]
-target-version = ["py8"]
+target-version = ["py38"]
 line-length = 120
 
 [tool.ruff]
