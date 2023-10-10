@@ -1,16 +1,25 @@
-darbiadev_ups
+darbiadev-ups
 =============
 
-``darbiadev_ups`` is a wrapper for UPS' API.
+A wrapper for UPS' API
 
 Module Index
 ------------
 
-Each of the ``darbiadev_ups`` modules is documented here.
+.. toctree::
+   :maxdepth: 1
 
-..  toctree::
-    :maxdepth: 1
-    :glob:
+   autoapi/index
 
-    ups_services
-    helpers
+.. toctree::
+   :caption: Other:
+   :hidden:
+
+   changelog
+
+Extras
+------
+
+* :ref:`genindex`
+* :ref:`search`
+* :doc:`changelog`
