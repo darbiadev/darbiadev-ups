@@ -8,11 +8,11 @@ on:
 
 jobs:
   pre-commit:
-    uses: darbiadev/.github/.github/workflows/generic-precommit.yaml@f185cc076161b47921c6fb6da4c1fd5e40b50bff # v3.0.0
+    uses: darbiadev/.github/.github/workflows/generic-precommit.yaml@b0749d50c2f32c5672a7c459f55f39416941c26d # v5.1.0
 
   lint:
     needs: pre-commit
-    uses: darbiadev/.github/.github/workflows/python-lint.yaml@f185cc076161b47921c6fb6da4c1fd5e40b50bff # v3.0.0
+    uses: darbiadev/.github/.github/workflows/python-lint.yaml@b0749d50c2f32c5672a7c459f55f39416941c26d # v5.1.0
 
   test:
     needs: lint
@@ -21,10 +21,12 @@ jobs:
         os: [ ubuntu-latest ]
         python-version: [ "3.8", "3.9", "3.10", "3.11" ]
 
-    uses: darbiadev/.github/.github/workflows/python-test.yaml@f185cc076161b47921c6fb6da4c1fd5e40b50bff # v3.0.0
+    uses: darbiadev/.github/.github/workflows/python-test.yaml@b0749d50c2f32c5672a7c459f55f39416941c26d # v5.1.0
     with:
       os: ${{ matrix.os }}
       python-version: ${{ matrix.python-version }}
+    secrets:
+      codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
   docs:
     # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -33,4 +35,4 @@ jobs:
       pages: write
       id-token: write
 
-    uses: darbiadev/.github/.github/workflows/github-pages-python-sphinx.yaml@f185cc076161b47921c6fb6da4c1fd5e40b50bff # v3.0.0
+    uses: darbiadev/.github/.github/workflows/github-pages-python-sphinx.yaml@b0749d50c2f32c5672a7c459f55f39416941c26d # v5.1.0
