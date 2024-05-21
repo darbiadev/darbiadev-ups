@@ -46,7 +46,7 @@ pyyaml==6.0.1
     # via sphinx-autoapi
 releases==2.1.1
     # via -r requirements-docs.in
-requests==2.31.0
+requests==2.32.0
     # via sphinx
 semantic-version==2.6.0
     # via releases
