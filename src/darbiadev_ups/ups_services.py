@@ -1,4 +1,4 @@
-"""UPSServices"""
+"""UPSServices."""
 
 from __future__ import annotations
 
@@ -17,25 +17,23 @@ from darbiadev_ups.helpers import (
 try:
     from typing import Final
 except ImportError:
-    from typing_extensions import Final
+    from typing import Final
 
 
 class _AuthType(Enum):
-    """An enum for the authentication types"""
+    """An enum for the authentication types."""
 
     HEADERS = auto()
     JSON = auto()
 
 
 class UPSServices:
-    """
-    A class wrapping UPS' API.
-    """
+    """A class wrapping UPS' API."""
 
     TRACKING_REGEX: Final[str] = r"1Z[A-Z0-9]{6}[0-9]{10}"
-    TRACKING_URL: Final[
-        str
-    ] = "https://wwwapps.ups.com/WebTracking/processInputRequest?TypeOfInquiryNumber=T&InquiryNumber1={tracking_number}"
+    TRACKING_URL: Final[str] = (
+        "https://wwwapps.ups.com/WebTracking/processInputRequest?TypeOfInquiryNumber=T&InquiryNumber1={tracking_number}"
+    )
 
     def __init__(
         self,
@@ -43,14 +41,14 @@ class UPSServices:
         username: str,
         password: str,
         access_license_number: str,
-    ):
+    ) -> None:
         self.base_url: str = base_url
         self.__username: str = username
         self.__password: str = password
         self.__access_license_number: str = access_license_number
 
     def __auth_headers(self) -> dict[str, str]:
-        """Return authentication headers as a dictionary"""
+        """Return authentication headers as a dictionary."""
         return {
             "Username": self.__username,
             "Password": self.__password,
@@ -58,7 +56,7 @@ class UPSServices:
         }
 
     def __auth_dict(self) -> dict[str, dict[str, dict[str, str]]]:
-        """Return authentication JSON as a dictionary"""
+        """Return authentication JSON as a dictionary."""
         return {
             "UPSSecurity": {
                 "UsernameToken": {
@@ -68,7 +66,7 @@ class UPSServices:
                 "ServiceAccessToken": {
                     "AccessLicenseNumber": self.__access_license_number,
                 },
-            }
+            },
         }
 
     def make_request(
@@ -78,22 +76,23 @@ class UPSServices:
         service: str,
         data: dict[str, Any],
         timeout: int = 500,
-    ) -> dict:
-        """Make a request to UPS' API"""
+    ) -> dict:  # type: ignore[type-arg]
+        """Make a request to UPS' API."""
         args = {"method": method, "url": self.base_url + service, "json": data, "timeout": timeout}
 
         if auth_type == _AuthType.HEADERS:
             args["headers"] = self.__auth_headers()
         elif auth_type == _AuthType.JSON:
-            args["json"] = args["json"] | self.__auth_dict()
+            args["json"] = args["json"] | self.__auth_dict()  # type: ignore[operator]
         else:
-            raise ValueError(f"Invalid auth_type {auth_type}")
+            msg = f"Invalid auth_type {auth_type}"
+            raise ValueError(msg)
 
-        response = requests.request(**args)
-        return response.json()
+        response = requests.request(**args)  # type: ignore[arg-type] # noqa: S113 -- timeout is here
+        return response.json()  # type: ignore[no-any-return]
 
-    def track(self, tracking_number: str) -> dict:
-        """Get tracking details for a tracking number"""
+    def track(self, tracking_number: str) -> dict:  # type: ignore[type-arg]
+        """Get tracking details for a tracking number."""
         service: str = "rest/Track"
 
         data = {
@@ -101,11 +100,11 @@ class UPSServices:
                 "Request": {
                     "RequestOption": "1",
                     "TransactionReference": {
-                        "CustomerContext": tracking_number + " " + str(datetime.now().isoformat())
+                        "CustomerContext": tracking_number + " " + str(datetime.now().isoformat()),  # noqa: DTZ005
                     },
                 },
                 "InquiryNumber": tracking_number,
-            }
+            },
         }
 
         response = self.make_request(method="POST", auth_type=_AuthType.JSON, service=service, data=data)
@@ -118,8 +117,8 @@ class UPSServices:
         state: str,
         postal_code: str,
         country: str,
-    ):
-        """Validate an address"""
+    ) -> dict[str, str]:
+        """Validate an address."""
         service: str = "addressvalidation/v1/3"
 
         data = {
@@ -130,14 +129,14 @@ class UPSServices:
                     "PoliticalDivision1": state,
                     "PostcodePrimaryLow": postal_code,
                     "CountryCode": country,
-                }
-            }
+                },
+            },
         }
 
         response = self.make_request(method="POST", auth_type=_AuthType.HEADERS, service=service, data=data)
         return parse_address_validation_response(response)
 
-    def time_in_transit(
+    def time_in_transit(  # noqa: PLR0913
         self,
         from_state: str,
         from_postal_code: str,
@@ -146,20 +145,20 @@ class UPSServices:
         to_postal_code: str,
         to_country: str,
         weight: str,
-        pickup_date: str = None,
+        pickup_date: str | None = None,
     ) -> dict[str, str | list[dict[str, str]]]:
-        """Estimate transit time"""
+        """Estimate transit time."""
         service: str = "rest/TimeInTransit"
 
         if pickup_date is None:
-            pickup_date = datetime.today().strftime("%Y%m%d")
+            pickup_date = datetime.today().strftime("%Y%m%d")  # noqa: DTZ002
 
         data = {
             "TimeInTransitRequest": {
                 "Request": {
                     "RequestOption": "TNT",
                     "TransactionReference": {
-                        "CustomerContext": to_postal_code + " " + str(datetime.now().isoformat()),
+                        "CustomerContext": to_postal_code + " " + str(datetime.now().isoformat()),  # noqa: DTZ005
                     },
                 },
                 "ShipFrom": {
@@ -167,21 +166,21 @@ class UPSServices:
                         "StateProvinceCode": from_state,
                         "PostalCode": from_postal_code,
                         "CountryCode": from_country,
-                    }
+                    },
                 },
                 "ShipTo": {
                     "Address": {
                         "StateProvinceCode": to_state,
                         "PostalCode": to_postal_code,
                         "CountryCode": to_country,
-                    }
+                    },
                 },
                 "Pickup": {"Date": pickup_date},
                 "ShipmentWeight": {
                     "UnitOfMeasurement": {"Code": "LBS", "Description": "Pounds"},
                     "Weight": weight,
                 },
-            }
+            },
         }
 
         response = self.make_request(method="POST", auth_type=_AuthType.JSON, service=service, data=data)
