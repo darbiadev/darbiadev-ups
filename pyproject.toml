@@ -1,6 +1,6 @@
 [project]
 name = "darbiadev-ups"
-version = "0.7.0"
+version = "0.8.0"
 description = "A wrapper for UPS' API"
 readme = "README.md"
 authors = [
