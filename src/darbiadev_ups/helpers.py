@@ -1,18 +1,19 @@
-"""Helper functions"""
+"""Helper functions."""
 
 from __future__ import annotations
 
+import contextlib
 from datetime import datetime
 from typing import Any
 
 
-def get_nested_dict_value(dct: dict, keypath: str, default=None, separator: str = ".") -> Any:
-    """Parse nested values from dictionaries"""
+def get_nested_dict_value(dct: dict, keypath: str, default: Any = None, separator: str = ".") -> Any:  # type: ignore[type-arg] # noqa: ANN401
+    """Parse nested values from dictionaries."""
     keys = keypath.split(separator)
 
     value = dct
     for key in keys:
-        value = value.get(key)
+        value = value.get(key)  # type: ignore[assignment]
 
         if not value:
             value = default
@@ -21,20 +22,20 @@ def get_nested_dict_value(dct: dict, keypath: str, default=None, separator: str 
     return value
 
 
-def parse_tracking_response(response: dict, include_original: bool = False) -> dict:
-    """Parse tracking data"""
+def parse_tracking_response(response: dict, include_original: bool = False) -> dict:  # type: ignore[type-arg]# noqa: C901,FBT001,FBT002
+    """Parse tracking data."""
     output = {}
 
     error: str | None = get_nested_dict_value(response, "Fault.detail.Errors.ErrorDetail.PrimaryErrorCode")
     if error is not None:
         output = {"external_error": error}
 
-    package_data: dict | list[dict] = get_nested_dict_value(response, "TrackResponse.Shipment.Package")
+    package_data: dict | list[dict] = get_nested_dict_value(response, "TrackResponse.Shipment.Package")  # type: ignore[type-arg]
     if package_data is not None:
         data = {}
 
         shipment_references = set()
-        shipment_reference_data: list = get_nested_dict_value(response, "TrackResponse.Shipment.ReferenceNumber")
+        shipment_reference_data: list = get_nested_dict_value(response, "TrackResponse.Shipment.ReferenceNumber")  # type: ignore[type-arg]
         if isinstance(shipment_reference_data, dict):
             shipment_reference_data = [shipment_reference_data]
         for shipment_reference in shipment_reference_data:
@@ -51,32 +52,31 @@ def parse_tracking_response(response: dict, include_original: bool = False) -> d
             package_references_data = package.get("ReferenceNumber")
             if isinstance(package_references_data, dict):
                 package_references_data = [package_references_data]
-            for package_reference in package_references_data:
+            for package_reference in package_references_data:  # type: ignore[union-attr]
                 package_references.add(package_reference["Value"])
 
-            most_recent_activity = package.get("Activity")[0]
+            most_recent_activity = package.get("Activity")[0]  # type: ignore[index]
             most_recent_activity_status = most_recent_activity["Status"]["Description"]
 
             packages[package_tracking_number] = {
                 "status": most_recent_activity_status,
                 "references": list(package_references),
             }
-        data["packages"] = packages
+        data["packages"] = packages  # type: ignore[assignment]
 
-        output = data
+        output = data  # type: ignore[assignment]
 
     if len(output.keys()) == 0:
         output = {"error": "failed to parse response"}
 
     if include_original:
-        output = {"_original": response} | output
+        output = {"_original": response} | output  # type: ignore[assignment]
 
     return output
 
 
-def parse_address_validation_response(response: dict, include_original: bool = False) -> dict:
-    """Parse address validation data"""
-
+def parse_address_validation_response(response: dict, include_original: bool = False) -> dict:  # type: ignore[type-arg] # noqa: FBT001,FBT002
+    """Parse address validation data."""
     output = {
         "status": None,
         "classification": "",
@@ -89,10 +89,8 @@ def parse_address_validation_response(response: dict, include_original: bool = F
         output["status"] = "\n".join(errors)
 
     # Remove the top level wrapper
-    try:
+    with contextlib.suppress(KeyError):
         response = response["XAVResponse"]
-    except KeyError:
-        pass
 
     no_candidates_indicator: str | None = get_nested_dict_value(response, "NoCandidatesIndicator")
     valid_address_indicator: str | None = get_nested_dict_value(response, "ValidAddressIndicator")
@@ -109,7 +107,9 @@ def parse_address_validation_response(response: dict, include_original: bool = F
         first_candidate = candidates[0]
 
         output["classification"] = get_nested_dict_value(
-            first_candidate, "AddressClassification.Description", "Unknown"
+            first_candidate,
+            "AddressClassification.Description",
+            "Unknown",
         )
 
         street_address = get_nested_dict_value(first_candidate, "AddressKeyFormat.AddressLine")
@@ -121,13 +121,13 @@ def parse_address_validation_response(response: dict, include_original: bool = F
             output["status"] = "Valid"
 
     if include_original:
-        output = {"_original": response} | output
+        output = {"_original": response} | output  # type: ignore[assignment]
 
     return output
 
 
-def parse_time_in_transit_response(response: dict, include_original: bool = False) -> dict:
-    """Parse time in transit data"""
+def parse_time_in_transit_response(response: dict, include_original: bool = False) -> dict:  # type: ignore[type-arg]  # noqa: FBT001,FBT002
+    """Parse time in transit data."""
     alert: str = get_nested_dict_value(response, "TimeInTransitResponse.Response.Alert.Description")
 
     output = {
@@ -141,19 +141,20 @@ def parse_time_in_transit_response(response: dict, include_original: bool = Fals
 
         pickup_date = get_nested_dict_value(service, "EstimatedArrival.Pickup.Date")
         pickup_time = get_nested_dict_value(service, "EstimatedArrival.Pickup.Time")
-        pickup_datetime = datetime.strptime(pickup_date + pickup_time, "%Y%m%d%H%M%S")
+        pickup_datetime = datetime.strptime(pickup_date + pickup_time, "%Y%m%d%H%M%S")  # noqa: DTZ007
 
         arrival_date = get_nested_dict_value(service, "EstimatedArrival.Arrival.Date")
         arrival_time = get_nested_dict_value(service, "EstimatedArrival.Arrival.Time")
-        arrival_datetime = datetime.strptime(arrival_date + arrival_time, "%Y%m%d%H%M%S")
+        arrival_datetime = datetime.strptime(arrival_date + arrival_time, "%Y%m%d%H%M%S")  # noqa: DTZ007
 
         business_days_in_transit = get_nested_dict_value(service, "EstimatedArrival.BusinessDaysInTransit")
         day_of_week = get_nested_dict_value(service, "EstimatedArrival.DayOfWeek")
-        customer_center_cutoff = datetime.strptime(
-            get_nested_dict_value(service, "EstimatedArrival.CustomerCenterCutoff"), "%H%M%S"
+        customer_center_cutoff = datetime.strptime(  # noqa: DTZ007
+            get_nested_dict_value(service, "EstimatedArrival.CustomerCenterCutoff"),
+            "%H%M%S",
         ).time()
 
-        output["services"].append(
+        output["services"].append(  # type: ignore[attr-defined]
             {
                 "service_name": service_name,
                 "pickup_time": str(pickup_datetime),
@@ -161,10 +162,10 @@ def parse_time_in_transit_response(response: dict, include_original: bool = Fals
                 "business_days_in_transit": business_days_in_transit,
                 "day_of_week": day_of_week,
                 "customer_center_cutoff": str(customer_center_cutoff),
-            }
+            },
         )
 
     if include_original:
-        output = {"_original": response} | output
+        output = {"_original": response} | output  # type: ignore[assignment]
 
     return output

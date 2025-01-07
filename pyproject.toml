@@ -7,36 +7,54 @@ authors = [
     { name = "Bradley Reynolds", email = "bradley.reynolds@darbia.dev" },
 ]
 license = { text = "MIT" }
-requires-python = ">=3.8"
-dynamic = ["dependencies", "optional-dependencies"]
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.32.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    # DX
+    "nox>=2024.4.15",
+    "pre-commit>=3.7.1",
+    # Linters
+    "ruff>=0.5.2",
+    "mypy>=1.10.1",
+    "types-requests>=2.32.0.20241016",
+]
+docs = [
+    "sphinx>=7.4.4",
+    "furo>=2024.5.6",
+    "sphinx-autoapi>=3.1.2",
+    "releases>=2.1.1",
+]
+tests = [
+    "coverage>=7.6.1",
+    "pytest>=8.2.2",
+    "pytest-randomly>=3.15.0",
+    "pytest-alembic>=0.11.0",
+]
 
 [project.urls]
 repository = "https://github.com/darbiadev/darbiadev-ups/"
 documentation = "https://darbia.dev/darbiadev-ups/"
 
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.setuptools.dynamic.dependencies]
-file = ["requirements/requirements.txt"]
-
-[tool.setuptools.dynamic.optional-dependencies]
-dev = { file = ["requirements/requirements-dev.txt"] }
-tests = { file = ["requirements/requirements-tests.txt"] }
-docs = { file = ["requirements/requirements-docs.txt"] }
-
-[tool.black]
-target-version = ["py38"]
-line-length = 120
+[tool.hatch.build.targets.wheel]
+packages = ["src/darbiadev_ups"]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py39"
 line-length = 120
+
+[tool.ruff.lint]
 select = ["ALL"]
 ignore = []
 
-[tool.ruff.extend-per-file-ignores]
+[tool.ruff.lint.extend-per-file-ignores]
 "docs/*" = [
     "INP001", # (File `tests/*.py` is part of an implicit namespace package. Add an `__init__.py`.) - Docs are not modules
 ]
@@ -45,10 +63,13 @@ ignore = []
     "S101", # (Use of `assert` detected) - Yes, that's the point
 ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
 [tool.coverage.run]
 source = [
     "darbiadev_ups",
 ]
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers"
